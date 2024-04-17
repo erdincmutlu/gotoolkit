@@ -42,6 +42,8 @@ type UploadedFile struct {
 	FileSize         int64
 }
 
+// UploadOneFile is just a convenience method that calls UploadFiles, but expects only one file to
+// be in the upload.
 func (t *Tools) UploadOneFile(r *http.Request, uploadDir string, rename ...bool) (
 	*UploadedFile, error) {
 
@@ -58,6 +60,10 @@ func (t *Tools) UploadOneFile(r *http.Request, uploadDir string, rename ...bool)
 	return files[0], nil
 }
 
+// UploadFiles uploads one or more file to a specified directory, and gives the files a random name.
+// It returns a slice containing the newly named files, the original file names, the size of the files,
+// and potentially an error. If the optional last parameter is set to true, then we will not rename
+// the files, but will use the original file names.
 func (t *Tools) UploadFiles(r *http.Request, uploadDir string, rename ...bool) (
 	[]*UploadedFile, error) {
 	renameFile := true
