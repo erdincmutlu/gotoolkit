@@ -33,6 +33,18 @@ var uploadTests = []struct {
 		renameFile:    false,
 		errorExpected: false,
 	},
+	{
+		name:          "allowed rename",
+		allowedTypes:  []string{"image/jpeg", "image/png"},
+		renameFile:    true,
+		errorExpected: false,
+	},
+	{
+		name:          "not allowed",
+		allowedTypes:  []string{"image/jpeg"},
+		renameFile:    false,
+		errorExpected: true,
+	},
 }
 
 func TestTools_Uploadfiles(t *testing.T) {
@@ -87,10 +99,10 @@ func TestTools_Uploadfiles(t *testing.T) {
 			if os.IsNotExist(err) {
 				t.Errorf("%s: expected file to exist: %s", e.name, err.Error())
 			}
-		}
 
-		// clean up
-		_ = os.Remove(fmt.Sprintf("./testdata/uploads/%s", uploadedFiles[0].NewFileName))
+			// clean up
+			_ = os.Remove(fmt.Sprintf("./testdata/uploads/%s", uploadedFiles[0].NewFileName))
+		}
 
 		if !e.errorExpected && err != nil {
 			t.Errorf("%s: error not expected but received", e.name)
