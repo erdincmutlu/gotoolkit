@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"github.com/erdincmutlu/toolkit"
 )
 
 type RequestPayload struct {
@@ -35,7 +37,23 @@ func main() {
 }
 
 func receivePost(w http.ResponseWriter, r *http.Request) {
+	var requestPayload RequestPayload
+	var t toolkit.Tools
 
+	err := t.ReadJSON(w, r, &requestPayload)
+	if err != nil {
+		t.ErrorJSON(w, err)
+		return
+	}
+
+	responsePayload := ResponsePayload{
+		Message: "hit the handler okay, and sending response",
+	}
+
+	err = t.WriteJSON(w, http.StatusAccepted, responsePayload)
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func remoteService(w http.ResponseWriter, r *http.Request) {
