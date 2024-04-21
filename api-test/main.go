@@ -20,6 +20,9 @@ func main() {
 
 func routes() http.Handler {
 	mux := http.NewServeMux()
+
+	mux.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("."))))
+
 	mux.HandleFunc("/api/login", login)
 	mux.HandleFunc("/api/logout", logout)
 
@@ -27,6 +30,31 @@ func routes() http.Handler {
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
+	var tools toolkit.Tools
+
+	var payload struct {
+		Email    string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	err := tools.ReadJSON(w, r, &payload)
+	if err != nil {
+		tools.ErrorJSON(w, err)
+		return
+	}
+
+	var respPayload toolkit.JSONResponse
+
+	if payload.Email == "me@here.com" && payload.Password == "verysecret" {
+		respPayload.Error = false
+		respPayload.Message = "Logged in"
+		tools.WriteJSON(w, http.StatusAccepted, respPayload)
+		return
+	}
+
+	respPayload.Error = true
+	respPayload.Message = "invalid credentials"
+	tools.WriteJSON(w, http.StatusUnauthorized, respPayload)
 
 }
 
